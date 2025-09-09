@@ -4,7 +4,7 @@ import 'package:qalb/screens/group_page.dart';
 import 'package:qalb/screens/settings/settings.dart';
 
 import 'navigation/bottom_nav_bar.dart';
-import 'screens/add_page.dart';
+import 'screens/add/add_page.dart';
 import 'screens/call_page.dart';
 import 'screens/channel_page.dart';
 
@@ -85,6 +85,24 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ],
+      ),
+      drawer: Drawer(
+        // Add a ListView to the drawer. This ensures the user can scroll
+        // through the options in the drawer if there isn't enough vertical
+        // space to fit everything.
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(title: const Text('Home')),
+            ListTile(title: const Text('Business')),
+            ListTile(title: const Text('School')),
+          ],
+        ),
       ),
       body: _pages[_selectedKey] ?? const SizedBox(),
       floatingActionButton: FloatingActionButton(

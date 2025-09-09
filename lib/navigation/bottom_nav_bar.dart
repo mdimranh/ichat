@@ -23,6 +23,7 @@ class BottomNavBar extends StatelessWidget {
           selectedColor: Colors.green,
           showBadge: true,
           badge: Text('3'),
+          badgeColor: Colors.red,
         ),
         BottomBarItem(
           icon: const Icon(Icons.phone),

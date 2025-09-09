@@ -1,5 +1,6 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:qalb/screens/chat/userDialog.dart';
 
 class ChatPage extends StatefulWidget {
   final String userId;
@@ -38,24 +39,36 @@ class _ChatPageState extends State<ChatPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Row(
-          children: [
-            CircleAvatar(backgroundImage: NetworkImage(widget.imageUrl)),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Text("Active now", style: TextStyle(fontSize: 12)),
-              ],
+        title: InkWell(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          onTap: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => Dialog(
+              child: UserDialog(
+                user: {"name": widget.name, "imageUrl": widget.imageUrl},
+              ),
             ),
-          ],
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(backgroundImage: NetworkImage(widget.imageUrl)),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text("Active now", style: TextStyle(fontSize: 12)),
+                ],
+              ),
+            ],
+          ),
         ),
         actions: [
           IconButton(icon: const Icon(Icons.call), onPressed: () {}),

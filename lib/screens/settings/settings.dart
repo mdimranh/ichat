@@ -78,68 +78,67 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget _settingSection(String title, List<Map<String, dynamic>> items) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Section title
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section title
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8, left: 18),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.black54,
             ),
           ),
-          // Items
-          Column(
-            children: items.map((item) {
-              return InkWell(
-                onTap: () {
-                  // Handle navigation
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  child: Row(
-                    children: [
-                      Icon(item["icon"], color: Colors.green, size: 22),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+        ),
+        Column(
+          children: items.map((item) {
+            return InkWell(
+              onTap: () {
+                // Handle navigation
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 18,
+                ),
+                child: Row(
+                  children: [
+                    Icon(item["icon"], color: Colors.green, size: 22),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item["title"],
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          if (item["description"] != null) ...[
+                            // const SizedBox(height: 2),
                             Text(
-                              item["title"],
+                              item["description"],
                               style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                                color: Colors.black54,
                               ),
                             ),
-                            if (item["description"] != null) ...[
-                              // const SizedBox(height: 2),
-                              Text(
-                                item["description"],
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
                           ],
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }
