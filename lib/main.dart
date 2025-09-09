@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:qalb/screens/chat_page.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:qalb/screens/group_page.dart';
-import 'package:qalb/screens/settings/settings.dart';
+import 'package:qalb/screens/home/chat_page.dart';
+import 'package:qalb/screens/profile/profile.dart';
 
 import 'navigation/bottom_nav_bar.dart';
 import 'screens/add/add_page.dart';
@@ -18,11 +19,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Qalb',
+      title: 'iChat',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
+        primarySwatch: Colors.green,
+        // useMaterial3: true,
+        brightness: Brightness.light,
       ),
+      darkTheme: ThemeData(
+        primarySwatch: Colors.green,
+        // useMaterial3: true,
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
       home: const MyHomePage(),
     );
   }
@@ -41,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<String> _keys = ["chat", "call", "group", "channel"];
 
   final Map<String, Widget> _pages = {
-    "chat": const ChatPage(),
+    "chat": HomeChatPage(),
     "call": const CallPage(),
     "group": const GroupPage(),
     "channel": const ChannelPage(),
@@ -50,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         // backgroundColor: Colors.green,
         bottom: PreferredSize(
@@ -62,9 +71,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         actionsPadding: const EdgeInsets.only(right: 20),
         title: Text(
-          "Qalb",
+          "iChat",
           style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
+            color: Color(Colors.green.value),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -75,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      const SettingsPage(), // 🔽 your settings page
+                      const ProfilePage(), // 🔽 your settings page
                 ),
               );
             },
@@ -86,24 +95,24 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text('Drawer Header'),
-            ),
-            ListTile(title: const Text('Home')),
-            ListTile(title: const Text('Business')),
-            ListTile(title: const Text('School')),
-          ],
-        ),
-      ),
+      // drawer: Drawer(
+      //   // Add a ListView to the drawer. This ensures the user can scroll
+      //   // through the options in the drawer if there isn't enough vertical
+      //   // space to fit everything.
+      //   child: ListView(
+      //     // Important: Remove any padding from the ListView.
+      //     padding: EdgeInsets.zero,
+      //     children: [
+      //       const DrawerHeader(
+      //         decoration: BoxDecoration(color: Colors.blue),
+      //         child: Text('Drawer Header'),
+      //       ),
+      //       ListTile(title: const Text('Home')),
+      //       ListTile(title: const Text('Business')),
+      //       ListTile(title: const Text('School')),
+      //     ],
+      //   ),
+      // ),
       body: _pages[_selectedKey] ?? const SizedBox(),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
@@ -114,7 +123,12 @@ class _MyHomePageState extends State<MyHomePage> {
             MaterialPageRoute(builder: (context) => const AddPage()),
           );
         },
-        child: const Icon(Icons.add, color: Colors.white),
+        child: HugeIcon(
+          icon: HugeIcons.strokeRoundedPlusSign,
+          color: Colors.white,
+          size: 24,
+          strokeWidth: 4,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavBar(
@@ -125,6 +139,27 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
+    );
+  }
+
+  Widget _buildFloatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        // Show SnackBar example
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Hello from FAB!'),
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(
+              bottom: 100, // Adjust based on your bottom bar height
+              left: 20,
+              right: 20,
+            ),
+          ),
+        );
+      },
+      child: Icon(Icons.add),
+      backgroundColor: Colors.blue,
     );
   }
 }

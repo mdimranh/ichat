@@ -36,6 +36,16 @@ dependencies:
   cupertino_icons: ^1.0.8
   stylish_bottom_bar: ^1.1.1
   emoji_picker_flutter: ^4.3.0
+  hugeicons: ^1.0.0
+  qr_code_scanner_plus: ^2.0.10+1
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png" # 👈 your icon file
+  adaptive_icon_background: "#ffffff" # background color for Android 8+
+  adaptive_icon_foreground: "assets/icon/app_icon.png"
 
 dev_dependencies:
   flutter_test:

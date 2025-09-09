@@ -1,41 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:qalb/screens/add/new_person.dart';
-import 'package:qalb/screens/chat/chat.dart'; // import chat page
+import 'package:qalb/screens/chat/chat.dart';
+import 'package:qalb/widgets/avatar.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 class AddPage extends StatelessWidget {
   const AddPage({super.key});
 
   // 🔽 Mock user data with profile images + ID
-  final List<Map<String, String>> mockUsers = const [
+  final List<Map<String, dynamic>> mockUsers = const [
     {
       "id": "1",
       "name": "John Doe",
       "type": "Mobile",
       "image": "https://i.pravatar.cc/150?img=1",
+      "isActive": true,
     },
     {
       "id": "2",
       "name": "Alice Smith",
       "type": "Work",
       "image": "https://i.pravatar.cc/150?img=2",
+      "isActive": false,
     },
     {
       "id": "3",
       "name": "Michael Brown",
       "type": "Home",
       "image": "https://i.pravatar.cc/150?img=3",
+      "isActive": true,
     },
     {
       "id": "4",
       "name": "Sophia Johnson",
       "type": "Mobile",
       "image": "https://i.pravatar.cc/150?img=4",
+      "isActive": false,
     },
     {
       "id": "5",
       "name": "David Wilson",
       "type": "Other",
       "image": "https://i.pravatar.cc/150?img=5",
+      "isActive": true,
     },
   ];
 
@@ -45,13 +53,24 @@ class AddPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Connection"),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
+          preferredSize: const Size.fromHeight(1),
           child: Divider(
             thickness: 0.5,
             height: 0.5,
             color: Colors.black.withOpacity(0.1),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedQrCode01,
+              color: Colors.black45,
+              size: 24,
+              strokeWidth: 2,
+            ),
+            onPressed: () => _openQrScanner(context),
+          ),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +79,12 @@ class AddPage extends StatelessWidget {
           Column(
             children: [
               _buildListItem(
-                icon: Icons.person_add_alt_1,
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedUserAdd02,
+                  color: Colors.green,
+                  size: 24,
+                  strokeWidth: 2,
+                ),
                 text: "New person",
                 subtitle: "Add a person by phone number.",
                 color: Colors.green.shade600,
@@ -74,13 +98,23 @@ class AddPage extends StatelessWidget {
                 },
               ),
               _buildListItem(
-                icon: Icons.group_add,
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedAddTeam,
+                  color: Colors.green,
+                  size: 24,
+                  strokeWidth: 2,
+                ),
                 text: "New group",
                 subtitle: "Create group to send messages, media and call.",
                 color: Colors.green.shade600,
               ),
               _buildListItem(
-                icon: Icons.library_add,
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedUserAdd02,
+                  color: Colors.green,
+                  size: 24,
+                  strokeWidth: 2,
+                ),
                 text: "New channel",
                 subtitle: "Create channel to send post and media.",
                 color: Colors.green.shade600,
@@ -112,6 +146,7 @@ class AddPage extends StatelessWidget {
                   name: user["name"]!,
                   type: user["type"]!,
                   imageUrl: user["image"]!,
+                  isActive: user["isActive"]!,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -133,8 +168,122 @@ class AddPage extends StatelessWidget {
     );
   }
 
+  void _openQrScanner(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // prevent tap outside to close
+      builder: (context) {
+        final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+        QRViewController? controller;
+
+        return Dialog(
+          insetPadding: const EdgeInsets.all(10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.95,
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: Column(
+              children: [
+                // 🔹 Top Bar with Back Button
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    // color: Colors.green.shade600,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          controller?.dispose();
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(
+                          Icons.arrow_back,
+                          // color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                      const Text(
+                        "Scan QR Code",
+                        style: TextStyle(
+                          fontFamily: "Poppins", // 👈 custom font
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          // color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(width: 24), // keep title centered
+                    ],
+                  ),
+                ),
+
+                // 🔹 Scanner View
+                Expanded(
+                  flex: 5,
+                  child: QRView(
+                    key: qrKey,
+                    onQRViewCreated: (ctrl) {
+                      controller = ctrl;
+                      controller?.scannedDataStream.listen((scanData) {
+                        Navigator.pop(context); // close dialog
+                        controller?.dispose();
+
+                        // 🔽 Handle scanned result
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "QR Code: ${scanData.code}",
+                              style: const TextStyle(fontFamily: "Poppins"),
+                            ),
+                          ),
+                        );
+                      });
+                    },
+                  ),
+                ),
+                // Expanded(flex: 5, child: Container()),
+
+                // 🔹 Bottom Section
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(16),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text(
+                        "Scan iChat QR Code to connect",
+                        style: TextStyle(
+                          fontFamily: "Poppins", // 👈 custom font
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildListItem({
-    required IconData icon,
+    required HugeIcon icon,
     required String text,
     String? subtitle,
     required Color color,
@@ -158,10 +307,10 @@ class AddPage extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.green.shade100,
+                    color: Colors.green.shade100.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  child: Icon(icon, size: 25, color: color),
+                  child: Center(child: icon),
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -204,26 +353,18 @@ class AddPage extends StatelessWidget {
     required String type,
     required String imageUrl,
     required VoidCallback onTap,
+    bool isActive = true,
   }) {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.only(
-          left: 15,
-          right: 15,
-          top: 10,
-          bottom: 10,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: NetworkImage(imageUrl),
-                  backgroundColor: Colors.green.shade100,
-                ),
+                Avatar(imageUrl: imageUrl, isOnline: isActive),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
