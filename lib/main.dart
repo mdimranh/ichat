@@ -1,37 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:qalb/db/helper.dart';
+import 'package:qalb/screens/add/add_page.dart';
+import 'package:qalb/screens/call_page.dart';
+import 'package:qalb/screens/channel_page.dart';
 import 'package:qalb/screens/group_page.dart';
 import 'package:qalb/screens/home/chat_page.dart';
-import 'package:qalb/screens/profile/profile.dart';
+import 'package:qalb/screens/welcome/welcome.dart';
 
 import 'navigation/bottom_nav_bar.dart';
-import 'screens/add/add_page.dart';
-import 'screens/call_page.dart';
-import 'screens/channel_page.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final db = DBHelper();
+  final bool isLoggedIn = await db.isLoggedIn();
+
+  runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'iChat',
+      title: 'DeenCircle',
       theme: ThemeData(
         primarySwatch: Colors.green,
-        // useMaterial3: true,
         brightness: Brightness.light,
       ),
       darkTheme: ThemeData(
         primarySwatch: Colors.green,
-        // useMaterial3: true,
         brightness: Brightness.dark,
       ),
-      themeMode: ThemeMode.system,
-      home: const MyHomePage(),
+      themeMode: ThemeMode.light,
+      home: isLoggedIn ? const MyHomePage() : const WelcomePage(),
     );
   }
 }
@@ -45,7 +48,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _selectedKey = "chat";
-
   final List<String> _keys = ["chat", "call", "group", "channel"];
 
   final Map<String, Widget> _pages = {
@@ -58,64 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        // backgroundColor: Colors.green,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Divider(
-            thickness: 0.5,
-            height: 0.5,
-            color: Colors.black.withOpacity(0.1),
-          ),
-        ),
-        actionsPadding: const EdgeInsets.only(right: 20),
-        title: Text(
-          "iChat",
-          style: TextStyle(
-            color: Color(Colors.green.value),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const ProfilePage(), // 🔽 your settings page
-                ),
-              );
-            },
-            child: const CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
-            ),
-          ),
-        ],
-      ),
-      // drawer: Drawer(
-      //   // Add a ListView to the drawer. This ensures the user can scroll
-      //   // through the options in the drawer if there isn't enough vertical
-      //   // space to fit everything.
-      //   child: ListView(
-      //     // Important: Remove any padding from the ListView.
-      //     padding: EdgeInsets.zero,
-      //     children: [
-      //       const DrawerHeader(
-      //         decoration: BoxDecoration(color: Colors.blue),
-      //         child: Text('Drawer Header'),
-      //       ),
-      //       ListTile(title: const Text('Home')),
-      //       ListTile(title: const Text('Business')),
-      //       ListTile(title: const Text('School')),
-      //     ],
-      //   ),
-      // ),
       body: _pages[_selectedKey] ?? const SizedBox(),
+      appBar: AppBar(title: const Text("DeenCircle")),
       floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
         backgroundColor: Colors.green,
         onPressed: () {
           Navigator.push(
@@ -123,12 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
             MaterialPageRoute(builder: (context) => const AddPage()),
           );
         },
-        child: HugeIcon(
-          icon: HugeIcons.strokeRoundedPlusSign,
-          color: Colors.white,
-          size: 24,
-          strokeWidth: 4,
-        ),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavBar(
@@ -139,27 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      onPressed: () {
-        // Show SnackBar example
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hello from FAB!'),
-            behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.only(
-              bottom: 100, // Adjust based on your bottom bar height
-              left: 20,
-              right: 20,
-            ),
-          ),
-        );
-      },
-      child: Icon(Icons.add),
-      backgroundColor: Colors.blue,
     );
   }
 }
