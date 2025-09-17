@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:provider/provider.dart';
+import 'package:qalb/theme_manager.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -8,22 +10,35 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: Text("Menu", style: Theme.of(context).textTheme.titleLarge),
+        backgroundColor: Theme.of(context).colorScheme.background,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Divider(
             thickness: 0.5,
             height: 0.5,
-            color: Colors.black.withOpacity(0.1),
+            color: Theme.of(context).dividerColor,
           ),
         ),
+        actionsPadding: const EdgeInsets.only(right: 20),
+        actions: [
+          HugeIcon(
+            icon: HugeIcons.strokeRoundedQrCode,
+            color: Theme.of(context).iconTheme.color as Color,
+            size: 24,
+            strokeWidth: 2,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 20),
             Column(
-              children: const [
+              children: [
                 CircleAvatar(
                   radius: 50,
                   backgroundImage: NetworkImage(
@@ -33,11 +48,11 @@ class ProfilePage extends StatelessWidget {
                 SizedBox(height: 10),
                 Text(
                   "Muhammad Imran Hossain",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Text(
                   "@mdimranh",
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
@@ -49,7 +64,7 @@ class ProfilePage extends StatelessWidget {
                 "title": "Profile",
                 "icon": HugeIcon(
                   icon: HugeIcons.strokeRoundedUser,
-                  color: Colors.green,
+                  color: Theme.of(context).iconTheme.color as Color,
                   size: 24,
                   strokeWidth: 2,
                 ),
@@ -59,15 +74,13 @@ class ProfilePage extends StatelessWidget {
                 "title": "Password",
                 "icon": HugeIcon(
                   icon: HugeIcons.strokeRoundedLockPassword,
-                  color: Colors.green,
+                  color: Theme.of(context).iconTheme.color as Color,
                   size: 24,
                   strokeWidth: 2,
                 ),
                 "description": "Change your password",
               },
-            ]),
-
-            const SizedBox(height: 15),
+            ], context),
 
             // Security Section
             _settingSection("Security", [
@@ -75,7 +88,7 @@ class ProfilePage extends StatelessWidget {
                 "title": "Two-Factor Authentication",
                 "icon": HugeIcon(
                   icon: HugeIcons.strokeRoundedTwoFactorAccess,
-                  color: Colors.green,
+                  color: Theme.of(context).iconTheme.color as Color,
                   size: 24,
                   strokeWidth: 2,
                 ),
@@ -85,57 +98,179 @@ class ProfilePage extends StatelessWidget {
                 "title": "Devices",
                 "icon": HugeIcon(
                   icon: HugeIcons.strokeRoundedDeviceAccess,
-                  color: Colors.green,
+                  color: Theme.of(context).iconTheme.color as Color,
                   size: 24,
                   strokeWidth: 2,
                 ),
-                // no description → optional
+                "description": "Manage your devices",
               },
-            ]),
+            ], context),
+
+            // Settings
+            _settingSection("Settings", [
+              {
+                "title": "Accessibility",
+                "icon": HugeIcon(
+                  icon: HugeIcons.strokeRoundedUniversalAccess,
+                  color: Theme.of(context).iconTheme.color as Color,
+                  size: 24,
+                  strokeWidth: 2,
+                ),
+                "description": "Adjust accessibility settings",
+              },
+              {
+                "title": "Notifications",
+                "icon": HugeIcon(
+                  icon: HugeIcons.strokeRoundedNotification02,
+                  color: Theme.of(context).iconTheme.color as Color,
+                  size: 24,
+                  strokeWidth: 2,
+                ),
+                "description": "Manage your notifications",
+              },
+              {
+                "title": "Data and Storage",
+                "icon": HugeIcon(
+                  icon: HugeIcons.strokeRoundedDatabaseSetting,
+                  color: Theme.of(context).iconTheme.color as Color,
+                  size: 24,
+                  strokeWidth: 2,
+                ),
+                "description": "Control how your data is used",
+              },
+              {
+                "title": "Theme",
+                "icon": HugeIcon(
+                  icon: HugeIcons.strokeRoundedMoon,
+                  color: Theme.of(context).iconTheme.color as Color,
+                  size: 24,
+                  strokeWidth: 2,
+                ),
+                "description": Theme.of(context).brightness == Brightness.dark
+                    ? "Dark"
+                    : "Light",
+                "onTap": () async {
+                  final selectedTheme = await showDialog<ThemeMode>(
+                    context: context,
+                    builder: (context) {
+                      ThemeMode tempSelection =
+                          Theme.of(context).brightness == Brightness.dark
+                          ? ThemeMode.dark
+                          : ThemeMode.light;
+
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          return AlertDialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            title: Text(
+                              "Choose Theme",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                RadioListTile<ThemeMode>(
+                                  value: ThemeMode.light,
+                                  groupValue: tempSelection,
+                                  title: const Text("Light"),
+                                  secondary: const Icon(
+                                    Icons.light_mode_outlined,
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() => tempSelection = value!);
+                                  },
+                                  contentPadding: EdgeInsetsGeometry.zero,
+                                ),
+                                RadioListTile<ThemeMode>(
+                                  value: ThemeMode.dark,
+                                  groupValue: tempSelection,
+                                  title: const Text("Dark"),
+                                  secondary: const Icon(
+                                    Icons.dark_mode_outlined,
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() => tempSelection = value!);
+                                  },
+                                  contentPadding: EdgeInsetsGeometry.zero,
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, null),
+                                child: const Text("Cancel"),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(context, tempSelection),
+                                child: const Text("OK"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  );
+
+                  if (selectedTheme != null) {
+                    final themeManager = context.read<ThemeManager>();
+                    if (selectedTheme == ThemeMode.dark) {
+                      themeManager.setTheme(true);
+                    } else if (selectedTheme == ThemeMode.light) {
+                      themeManager.setTheme(false);
+                    } else {
+                      themeManager.setTheme(false);
+                    }
+                  }
+                },
+              },
+            ], context),
+            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
 
-  Widget _settingSection(String title, List<Map<String, dynamic>> items) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+  Widget _settingSection(
+    String title,
+    List<Map<String, dynamic>> items,
+    BuildContext context,
+  ) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 10, 10, 0),
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.color?.withAlpha(200),
+              ),
             ),
           ),
           const SizedBox(height: 10),
           Column(
             children: items.map((item) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
-                child: InkWell(
-                  onTap: () {
-                    // Handle navigation
-                  },
+              return InkWell(
+                onTap: () {
+                  item["onTap"]?.call();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 10,
+                  ),
                   child: Row(
                     children: [
-                      // Icon(item["icon"], color: Colors.green, size: 22),
                       item["icon"],
                       const SizedBox(width: 16),
                       Expanded(
@@ -144,19 +279,19 @@ class ProfilePage extends StatelessWidget {
                           children: [
                             Text(
                               item["title"],
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             if (item["description"] != null) ...[
-                              // const SizedBox(height: 2),
                               Text(
                                 item["description"],
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.color
+                                          ?.withAlpha(160),
+                                    ),
                               ),
                             ],
                           ],

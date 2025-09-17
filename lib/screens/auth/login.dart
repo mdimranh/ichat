@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_intl_phone_field/flutter_intl_phone_field.dart';
 import 'package:qalb/main.dart';
 
 class LoginPage extends StatefulWidget {
@@ -9,53 +10,82 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey();
+
+  FocusNode focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Login"), backgroundColor: Colors.green),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: "Name",
-                border: OutlineInputBorder(),
-              ),
+            Text(
+              "Enter phone number",
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: "Phone Number",
-                border: OutlineInputBorder(),
-              ),
+            const SizedBox(height: 10),
+            Text(
+              "Please confirm country code and enter phone number",
+              style: Theme.of(context).textTheme.labelMedium,
+              softWrap: true,
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              "to login or register",
+              style: Theme.of(context).textTheme.labelMedium,
+              softWrap: true,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 14,
-                ),
+            IntlPhoneField(
+              // initialValue: "7012345678",
+              focusNode: focusNode,
+              decoration: const InputDecoration(
+                labelText: 'Phone Number',
+                border: OutlineInputBorder(borderSide: BorderSide()),
+                fillColor: Colors.transparent,
               ),
-              onPressed: () {
-                // 👉 Later: Save to SQLite
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const MyHomePage()),
-                );
+              initialCountryCode: 'BD',
+              languageCode: "en",
+              onChanged: (phone) {
+                print(phone.completeNumber);
               },
-              child: const Text(
-                "Login",
-                style: TextStyle(fontSize: 18, color: Colors.white),
+              onCountryChanged: (country) {
+                print('Country changed to: ${country.name}');
+              },
+            ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MyHomePage()),
+                    );
+                  },
+                  child: Text(
+                    "Continue",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(color: Colors.white),
+                  ),
+                ),
               ),
             ),
           ],

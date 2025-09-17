@@ -51,20 +51,24 @@ class AddPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Connection"),
+        title: Text("Add New", style: Theme.of(context).textTheme.titleLarge),
+        backgroundColor: Theme.of(context).colorScheme.background,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Divider(
             thickness: 0.5,
             height: 0.5,
-            color: Colors.black.withOpacity(0.1),
+            color: Theme.of(context).dividerColor,
           ),
         ),
         actions: [
           IconButton(
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedQrCode01,
-              color: Colors.black45,
+              color: Theme.of(context).iconTheme.color as Color,
               size: 24,
               strokeWidth: 2,
             ),
@@ -81,13 +85,13 @@ class AddPage extends StatelessWidget {
               _buildListItem(
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedUserAdd02,
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 24,
                   strokeWidth: 2,
                 ),
                 text: "New person",
                 subtitle: "Add a person by phone number.",
-                color: Colors.green.shade600,
+                color: Theme.of(context).colorScheme.primary.withAlpha(20),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -96,28 +100,31 @@ class AddPage extends StatelessWidget {
                     ),
                   );
                 },
+                context: context,
               ),
               _buildListItem(
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedAddTeam,
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 24,
                   strokeWidth: 2,
                 ),
                 text: "New group",
                 subtitle: "Create group to send messages, media and call.",
-                color: Colors.green.shade600,
+                color: Theme.of(context).colorScheme.primary.withAlpha(20),
+                context: context,
               ),
               _buildListItem(
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedUserAdd02,
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 24,
                   strokeWidth: 2,
                 ),
                 text: "New channel",
                 subtitle: "Create channel to send post and media.",
-                color: Colors.green.shade600,
+                color: Theme.of(context).colorScheme.primary.withAlpha(20),
+                context: context,
               ),
             ],
           ),
@@ -159,6 +166,7 @@ class AddPage extends StatelessWidget {
                       ),
                     );
                   },
+                  context: context,
                 );
               },
             ),
@@ -288,6 +296,7 @@ class AddPage extends StatelessWidget {
     String? subtitle,
     required Color color,
     VoidCallback? onTap,
+    required BuildContext context,
   }) {
     return InkWell(
       onTap: () => onTap?.call(),
@@ -307,7 +316,9 @@ class AddPage extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.green.shade100.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: Center(child: icon),
@@ -321,16 +332,18 @@ class AddPage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black.withOpacity(0.8),
+                        color: Theme.of(context).textTheme.titleLarge!.color,
                       ),
                     ),
                     if (subtitle != null)
                       Text(
                         subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.black.withOpacity(0.8),
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.titleLarge!.color?.withAlpha(150),
+                            ),
                       ),
                   ],
                 ),
@@ -339,7 +352,7 @@ class AddPage extends StatelessWidget {
             Icon(
               Icons.keyboard_arrow_right,
               size: 28,
-              color: Colors.black.withOpacity(0.5),
+              color: Theme.of(context).iconTheme.color,
             ),
           ],
         ),
@@ -354,6 +367,7 @@ class AddPage extends StatelessWidget {
     required String imageUrl,
     required VoidCallback onTap,
     bool isActive = true,
+    required BuildContext context,
   }) {
     return InkWell(
       onTap: onTap,
@@ -364,7 +378,11 @@ class AddPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                Avatar(imageUrl: imageUrl, isOnline: isActive),
+                Avatar(
+                  imageUrl: imageUrl,
+                  isOnline: isActive,
+                  context: context,
+                ),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -374,21 +392,27 @@ class AddPage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black.withOpacity(0.8),
+                        color: Theme.of(context).textTheme.titleLarge!.color,
                       ),
                     ),
                     Text(
                       type,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.black.withOpacity(0.8),
+                        color: Theme.of(
+                          context,
+                        ).textTheme.titleLarge!.color?.withAlpha(150),
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            Icon(Icons.chat, size: 20, color: Colors.black.withOpacity(0.7)),
+            HugeIcon(
+              icon: HugeIcons.strokeRoundedMessage02,
+              size: 24,
+              color: Theme.of(context).iconTheme.color as Color,
+            ),
           ],
         ),
       ),

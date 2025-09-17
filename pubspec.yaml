@@ -42,6 +42,14 @@ dependencies:
   lottie: ^3.3.2
   sqflite: ^2.4.2
   path_provider: ^2.1.5
+  shared_preferences: ^2.2.2
+  provider: ^6.1.1
+  flutter_intl_phone_field: ^0.0.7
+  pinput: ^5.0.2
+  sms_autofill: ^2.4.1
+  permission_handler: ^12.0.1
+  http: ^1.5.0
+  device_info_plus: ^12.1.0
 
 flutter_icons:
   android: true

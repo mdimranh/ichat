@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qalb/screens/empty.dart';
+import 'package:qalb/widgets/empty.dart';
 
 class CallPage extends StatelessWidget {
   const CallPage({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../screens/empty.dart';
+import '../widgets/empty.dart';
 
 class GroupPage extends StatelessWidget {
   const GroupPage({super.key});

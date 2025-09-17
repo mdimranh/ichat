@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class Empty extends StatelessWidget {
   final IconData icon;
   final String message;
-  final Color iconColor;
+  final Color? iconColor;
 
   const Empty({
     super.key,
     required this.icon,
     required this.message,
-    this.iconColor = Colors.green, // default color
+    this.iconColor, // default color
   });
 
   @override
@@ -20,7 +20,11 @@ class Empty extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(icon, size: 120, color: iconColor),
+            Icon(
+              icon,
+              size: 120,
+              color: iconColor ?? Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(height: 16),
             Text(
               message,

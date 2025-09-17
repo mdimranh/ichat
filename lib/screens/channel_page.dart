@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qalb/screens/empty.dart';
+import 'package:qalb/widgets/empty.dart';
 
 class ChannelPage extends StatelessWidget {
   const ChannelPage({super.key});

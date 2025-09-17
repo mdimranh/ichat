@@ -261,58 +261,60 @@ class HomeChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: BorderSide.none,
-                borderRadius: BorderRadius.circular(50),
+    return CustomScrollView(
+      slivers: [
+        // 🔍 Search Section
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                filled: true,
+                fillColor: Colors.black.withOpacity(0.06),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Theme.of(context).iconTheme.color,
+                  size: 24,
+                ),
+                hintText: "Search",
+                isDense: true,
               ),
-              filled: true,
-              fillColor: Colors.black.withOpacity(0.06),
-              prefixIcon: const Icon(
-                Icons.search,
-                color: Colors.black54,
-                size: 24,
-              ),
-              hintText: "Search",
-              isDense: true,
             ),
           ),
         ),
-        Expanded(
-          child: ListView.separated(
-            itemCount: chatListData.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 0),
-            itemBuilder: (context, index) {
-              final user = chatListData[index];
-              return _userItem(
-                id: user["id"]!,
-                name: user["name"]!,
-                lastMessage: user["lastMessage"]!,
-                lastMessageTime: user["lastMessageTime"]!,
-                imageUrl: user["image"]!,
-                isActive: user["isOnline"]!,
-                isFavorite: user["isFavorite"]!,
-                isMuted: user["isMuted"]!,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ChatPage(
-                        userId: user["id"]!,
-                        name: user["name"]!,
-                        imageUrl: user["image"]!,
-                      ),
+
+        // 💬 Chat List
+        SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final user = chatListData[index];
+            return _userItem(
+              id: user["id"].toString(),
+              name: user["name"].toString(),
+              lastMessage: user["lastMessage"].toString(),
+              lastMessageTime: user["lastMessageTime"].toString(),
+              imageUrl: user["image"].toString(),
+              isActive: user["isOnline"] as bool,
+              isFavorite: user["isFavorite"] as bool,
+              isMuted: user["isMuted"] as bool,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChatPage(
+                      userId: user["id"].toString(),
+                      name: user["name"].toString(),
+                      imageUrl: user["image"].toString(),
                     ),
-                  );
-                },
-              );
-            },
-          ),
+                  ),
+                );
+              },
+              context: context,
+            );
+          }, childCount: chatListData.length),
         ),
       ],
     );
@@ -328,6 +330,7 @@ class HomeChatPage extends StatelessWidget {
     required bool isMuted,
     required VoidCallback onTap,
     bool isActive = true,
+    required BuildContext context,
   }) {
     return InkWell(
       onTap: onTap,
@@ -338,35 +341,44 @@ class HomeChatPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                Avatar(imageUrl: imageUrl, isOnline: isActive),
+                Avatar(
+                  imageUrl: imageUrl,
+                  isOnline: isActive,
+                  context: context,
+                ),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black.withOpacity(0.8),
-                      ),
-                    ),
+                    Text(name, style: Theme.of(context).textTheme.titleMedium),
                     Row(
                       children: [
                         Text(
                           lastMessage,
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.labelSmall?.color?.withOpacity(0.7),
+                              ),
                         ),
                         const SizedBox(width: 10),
-                        const Icon(
+                        Icon(
                           Icons.circle,
                           size: 6,
-                          color: Colors.black54,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.labelSmall?.color?.withOpacity(0.7),
                         ),
                         const SizedBox(width: 10),
                         Text(
                           "2:30 PM",
-                          style: TextStyle(fontSize: 12, color: Colors.black54),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.labelSmall?.color?.withOpacity(0.7),
+                              ),
                         ),
                         const SizedBox(width: 5),
                         const Icon(
@@ -389,7 +401,7 @@ class HomeChatPage extends StatelessWidget {
                       const SizedBox(width: 10),
                       HugeIcon(
                         icon: HugeIcons.strokeRoundedPin02,
-                        color: Colors.black54,
+                        color: Theme.of(context).iconTheme.color as Color,
                         size: 22,
                         strokeWidth: 2,
                       ),
@@ -401,7 +413,7 @@ class HomeChatPage extends StatelessWidget {
                       SizedBox(width: 10),
                       HugeIcon(
                         icon: HugeIcons.strokeRoundedNotificationOff01,
-                        color: Colors.black54,
+                        color: Theme.of(context).iconTheme.color as Color,
                         size: 20,
                         strokeWidth: 2,
                       ),

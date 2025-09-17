@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 
-Widget Avatar({required String imageUrl, bool isOnline = false}) {
+Widget Avatar({
+  required String imageUrl,
+  bool isOnline = false,
+  required BuildContext context,
+}) {
   return Stack(
     children: [
       CircleAvatar(
         radius: 20,
         backgroundImage: NetworkImage(imageUrl),
-        backgroundColor: Colors.green.shade100,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       if (isOnline)
         Positioned(
