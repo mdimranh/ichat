@@ -10,8 +10,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey();
-
   FocusNode focusNode = FocusNode();
 
   @override
