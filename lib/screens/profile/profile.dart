@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
+import 'package:qalb/db/helper.dart';
 import 'package:qalb/theme_manager.dart';
+
+final db = DBHelper();
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -11,7 +14,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Menu", style: Theme.of(context).textTheme.titleLarge),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -33,203 +36,232 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Column(
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: db.getUserDetails(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error loading user data: ${snapshot.error}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            );
+          }
+
+          if (!snapshot.hasData) {
+            return const Center(child: Text('No user data found'));
+          }
+
+          final user = snapshot.data!;
+
+          return SingleChildScrollView(
+            child: Column(
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(
-                    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80",
-                  ),
+                const SizedBox(height: 20),
+                Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(
+                        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80",
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}"
+                          .trim(),
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    Text(
+                      user['username'] ?? '',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 10),
-                Text(
-                  "Muhammad Imran Hossain",
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                Text(
-                  "@mdimranh",
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
+                const SizedBox(height: 30),
 
-            // Account Section
-            _settingSection("Account", [
-              {
-                "title": "Profile",
-                "icon": HugeIcon(
-                  icon: HugeIcons.strokeRoundedUser,
-                  color: Theme.of(context).iconTheme.color as Color,
-                  size: 24,
-                  strokeWidth: 2,
-                ),
-                "description": "View and edit your profile",
-              },
-              {
-                "title": "Password",
-                "icon": HugeIcon(
-                  icon: HugeIcons.strokeRoundedLockPassword,
-                  color: Theme.of(context).iconTheme.color as Color,
-                  size: 24,
-                  strokeWidth: 2,
-                ),
-                "description": "Change your password",
-              },
-            ], context),
+                // Account Section
+                _settingSection("Account", [
+                  {
+                    "title": "Profile",
+                    "icon": HugeIcon(
+                      icon: HugeIcons.strokeRoundedUser,
+                      color: Theme.of(context).iconTheme.color as Color,
+                      size: 24,
+                      strokeWidth: 2,
+                    ),
+                    "description": "View and edit your profile",
+                  },
+                  {
+                    "title": "Password",
+                    "icon": HugeIcon(
+                      icon: HugeIcons.strokeRoundedLockPassword,
+                      color: Theme.of(context).iconTheme.color as Color,
+                      size: 24,
+                      strokeWidth: 2,
+                    ),
+                    "description": "Change your password",
+                  },
+                ], context),
 
-            // Security Section
-            _settingSection("Security", [
-              {
-                "title": "Two-Factor Authentication",
-                "icon": HugeIcon(
-                  icon: HugeIcons.strokeRoundedTwoFactorAccess,
-                  color: Theme.of(context).iconTheme.color as Color,
-                  size: 24,
-                  strokeWidth: 2,
-                ),
-                "description": "Add extra security",
-              },
-              {
-                "title": "Devices",
-                "icon": HugeIcon(
-                  icon: HugeIcons.strokeRoundedDeviceAccess,
-                  color: Theme.of(context).iconTheme.color as Color,
-                  size: 24,
-                  strokeWidth: 2,
-                ),
-                "description": "Manage your devices",
-              },
-            ], context),
+                // Security Section
+                _settingSection("Security", [
+                  {
+                    "title": "Two-Factor Authentication",
+                    "icon": HugeIcon(
+                      icon: HugeIcons.strokeRoundedTwoFactorAccess,
+                      color: Theme.of(context).iconTheme.color as Color,
+                      size: 24,
+                      strokeWidth: 2,
+                    ),
+                    "description": "Add extra security",
+                  },
+                  {
+                    "title": "Devices",
+                    "icon": HugeIcon(
+                      icon: HugeIcons.strokeRoundedDeviceAccess,
+                      color: Theme.of(context).iconTheme.color as Color,
+                      size: 24,
+                      strokeWidth: 2,
+                    ),
+                    "description": "Manage your devices",
+                  },
+                ], context),
 
-            // Settings
-            _settingSection("Settings", [
-              {
-                "title": "Accessibility",
-                "icon": HugeIcon(
-                  icon: HugeIcons.strokeRoundedUniversalAccess,
-                  color: Theme.of(context).iconTheme.color as Color,
-                  size: 24,
-                  strokeWidth: 2,
-                ),
-                "description": "Adjust accessibility settings",
-              },
-              {
-                "title": "Notifications",
-                "icon": HugeIcon(
-                  icon: HugeIcons.strokeRoundedNotification02,
-                  color: Theme.of(context).iconTheme.color as Color,
-                  size: 24,
-                  strokeWidth: 2,
-                ),
-                "description": "Manage your notifications",
-              },
-              {
-                "title": "Data and Storage",
-                "icon": HugeIcon(
-                  icon: HugeIcons.strokeRoundedDatabaseSetting,
-                  color: Theme.of(context).iconTheme.color as Color,
-                  size: 24,
-                  strokeWidth: 2,
-                ),
-                "description": "Control how your data is used",
-              },
-              {
-                "title": "Theme",
-                "icon": HugeIcon(
-                  icon: HugeIcons.strokeRoundedMoon,
-                  color: Theme.of(context).iconTheme.color as Color,
-                  size: 24,
-                  strokeWidth: 2,
-                ),
-                "description": Theme.of(context).brightness == Brightness.dark
-                    ? "Dark"
-                    : "Light",
-                "onTap": () async {
-                  final selectedTheme = await showDialog<ThemeMode>(
-                    context: context,
-                    builder: (context) {
-                      ThemeMode tempSelection =
-                          Theme.of(context).brightness == Brightness.dark
-                          ? ThemeMode.dark
-                          : ThemeMode.light;
+                // Settings
+                _settingSection("Settings", [
+                  {
+                    "title": "Accessibility",
+                    "icon": HugeIcon(
+                      icon: HugeIcons.strokeRoundedUniversalAccess,
+                      color: Theme.of(context).iconTheme.color as Color,
+                      size: 24,
+                      strokeWidth: 2,
+                    ),
+                    "description": "Adjust accessibility settings",
+                  },
+                  {
+                    "title": "Notifications",
+                    "icon": HugeIcon(
+                      icon: HugeIcons.strokeRoundedNotification02,
+                      color: Theme.of(context).iconTheme.color as Color,
+                      size: 24,
+                      strokeWidth: 2,
+                    ),
+                    "description": "Manage your notifications",
+                  },
+                  {
+                    "title": "Data and Storage",
+                    "icon": HugeIcon(
+                      icon: HugeIcons.strokeRoundedDatabaseSetting,
+                      color: Theme.of(context).iconTheme.color as Color,
+                      size: 24,
+                      strokeWidth: 2,
+                    ),
+                    "description": "Control how your data is used",
+                  },
+                  {
+                    "title": "Theme",
+                    "icon": HugeIcon(
+                      icon: HugeIcons.strokeRoundedMoon,
+                      color: Theme.of(context).iconTheme.color as Color,
+                      size: 24,
+                      strokeWidth: 2,
+                    ),
+                    "description":
+                        Theme.of(context).brightness == Brightness.dark
+                        ? "Dark"
+                        : "Light",
+                    "onTap": () async {
+                      final selectedTheme = await showDialog<ThemeMode>(
+                        context: context,
+                        builder: (context) {
+                          ThemeMode tempSelection =
+                              Theme.of(context).brightness == Brightness.dark
+                              ? ThemeMode.dark
+                              : ThemeMode.light;
 
-                      return StatefulBuilder(
-                        builder: (context, setState) {
-                          return AlertDialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            title: Text(
-                              "Choose Theme",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                RadioListTile<ThemeMode>(
-                                  value: ThemeMode.light,
-                                  groupValue: tempSelection,
-                                  title: const Text("Light"),
-                                  secondary: const Icon(
-                                    Icons.light_mode_outlined,
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() => tempSelection = value!);
-                                  },
-                                  contentPadding: EdgeInsetsGeometry.zero,
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                RadioListTile<ThemeMode>(
-                                  value: ThemeMode.dark,
-                                  groupValue: tempSelection,
-                                  title: const Text("Dark"),
-                                  secondary: const Icon(
-                                    Icons.dark_mode_outlined,
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() => tempSelection = value!);
-                                  },
-                                  contentPadding: EdgeInsetsGeometry.zero,
+                                title: Text(
+                                  "Choose Theme",
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
                                 ),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, null),
-                                child: const Text("Cancel"),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.pop(context, tempSelection),
-                                child: const Text("OK"),
-                              ),
-                            ],
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    RadioListTile<ThemeMode>(
+                                      value: ThemeMode.light,
+                                      groupValue: tempSelection,
+                                      title: const Text("Light"),
+                                      secondary: const Icon(
+                                        Icons.light_mode_outlined,
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() => tempSelection = value!);
+                                      },
+                                      contentPadding: EdgeInsets.zero,
+                                    ),
+                                    RadioListTile<ThemeMode>(
+                                      value: ThemeMode.dark,
+                                      groupValue: tempSelection,
+                                      title: const Text("Dark"),
+                                      secondary: const Icon(
+                                        Icons.dark_mode_outlined,
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() => tempSelection = value!);
+                                      },
+                                      contentPadding: EdgeInsets.zero,
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, null),
+                                    child: const Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, tempSelection),
+                                    child: const Text("OK"),
+                                  ),
+                                ],
+                              );
+                            },
                           );
                         },
                       );
-                    },
-                  );
 
-                  if (selectedTheme != null) {
-                    final themeManager = context.read<ThemeManager>();
-                    if (selectedTheme == ThemeMode.dark) {
-                      themeManager.setTheme(true);
-                    } else if (selectedTheme == ThemeMode.light) {
-                      themeManager.setTheme(false);
-                    } else {
-                      themeManager.setTheme(false);
-                    }
-                  }
-                },
-              },
-            ], context),
-            const SizedBox(height: 30),
-          ],
-        ),
+                      if (selectedTheme != null) {
+                        final themeManager = context.read<ThemeManager>();
+                        if (selectedTheme == ThemeMode.dark) {
+                          themeManager.setTheme(true);
+                        } else if (selectedTheme == ThemeMode.light) {
+                          themeManager.setTheme(false);
+                        } else {
+                          themeManager.setTheme(false);
+                        }
+                      }
+                    },
+                  },
+                ], context),
+                const SizedBox(height: 30),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

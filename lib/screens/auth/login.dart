@@ -62,10 +62,10 @@ class _LoginPageState extends State<LoginPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-                    padding: MaterialStateProperty.all(
+                    padding: WidgetStateProperty.all(
                       const EdgeInsets.symmetric(vertical: 10),
                     ),
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

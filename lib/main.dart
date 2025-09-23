@@ -1,7 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hugeicons/hugeicons.dart';
+// import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:qalb/db/helper.dart';
 import 'package:qalb/screens/add/add_page.dart';
 import 'package:qalb/screens/call_page.dart';
 import 'package:qalb/screens/channel_page.dart';
@@ -9,14 +12,72 @@ import 'package:qalb/screens/group_page.dart';
 import 'package:qalb/screens/home/chat_page.dart';
 import 'package:qalb/screens/profile/profile.dart';
 import 'package:qalb/screens/welcome/welcome.dart';
+import 'package:qalb/services/firebase_messaging.dart';
+import 'package:qalb/services/notification.dart';
+import 'package:qalb/storage/secure_storage.dart';
 import 'package:qalb/theme_manager.dart';
 
 import 'navigation/bottom_nav_bar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final db = DBHelper();
-  final bool isLoggedIn = await db.isLoggedIn();
+
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyBSv8_LnhCzKyu60b77hjiYy5aUzxU9HK8",
+      appId: "1:439383973298:android:1de0c16deca651d28558ab",
+      messagingSenderId: "439383973298",
+      projectId: "deencircle-5c06d",
+    ),
+  );
+  await FirebaseMessagingService().init();
+
+  final notificationService = NotificationService();
+  await notificationService.init();
+
+  // take permission for notifications
+  final status = await Permission.notification.status;
+  if (!status.isGranted) {
+    await Permission.notification.request();
+  }
+
+  // ✅ Listen for internet changes
+  // InternetConnection().onStatusChange.listen((InternetStatus status) async {
+  //   switch (status) {
+  //     case InternetStatus.connected:
+  //       print("Connected ------------ ");
+  //       await notificationService.showNotification(
+  //         id: 0,
+  //         title: "Connected",
+  //         body: "Internet Connected",
+  //         channelId: "internet_channel",
+  //         channelName: "Internet Status",
+  //         channelDescription: "Shows when internet connects/disconnects",
+  //         importance: Importance.max,
+  //         priority: Priority.high,
+  //         playSound: true,
+  //       );
+  //       break;
+
+  //     case InternetStatus.disconnected:
+  //       print("Disconnected ------------ ");
+  //       await notificationService.showNotification(
+  //         id: 1,
+  //         title: "Disconnected",
+  //         body: "Internet Disconnected",
+  //         channelId: "internet_channel",
+  //         channelName: "Internet Status",
+  //         channelDescription: "Shows when internet connects/disconnects",
+  //         importance: Importance.max,
+  //         priority: Priority.high,
+  //         playSound: true,
+  //       );
+  //       break;
+  //   }
+  // });
+
+  final storage = SecureStorageHelper();
+  final isLoggedIn = await storage.isUserLoggedIn();
 
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
@@ -73,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,

@@ -1,3 +1,5 @@
+// import 'dart:convert';
+
 import 'dart:convert';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -5,9 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:qalb/db/helper.dart';
+import 'package:qalb/main.dart';
 import 'package:qalb/screens/welcome/login.dart';
 import 'package:qalb/screens/welcome/otp_verify.dart';
+import 'package:qalb/storage/secure_storage.dart';
 import 'package:qalb/theme_manager.dart';
+import 'package:uuid/uuid.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -19,6 +25,7 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   int _currentStep = 0; // 0 = Welcome, 1 = Login, 2 = OTP
   String? _phoneNumber;
+  String? _code;
   bool _isPhoneValid = false;
   bool _isLoading = false;
 
@@ -35,22 +42,37 @@ class _WelcomePageState extends State<WelcomePage> {
     });
   }
 
-  Future<String> getDeviceId() async {
-    final deviceInfo = DeviceInfoPlugin();
+  void _setCode(String code) {
+    setState(() => _code = code);
+    if (code.length == 6) _nextStep();
+  }
 
+  // create uuid4 device id
+  String _createDeviceId() => const Uuid().v4();
+
+  Future<String> getDeviceId() async {
+    final storage = SecureStorageHelper();
+    var did = await storage.getDeviceId();
+
+    if (did != null) return did;
+
+    final deviceInfo = DeviceInfoPlugin();
     try {
       if (Theme.of(context).platform == TargetPlatform.android) {
         final androidInfo = await deviceInfo.androidInfo;
-        return androidInfo.id; // or androidInfo.androidId
+        did = androidInfo.id; // or androidInfo.androidId
       } else if (Theme.of(context).platform == TargetPlatform.iOS) {
         final iosInfo = await deviceInfo.iosInfo;
-        return iosInfo.identifierForVendor ?? "unknown-ios";
+        did = iosInfo.identifierForVendor ?? _createDeviceId();
       } else {
-        return "unsupported-platform";
+        did = _createDeviceId();
       }
     } catch (e) {
-      return "unknown-device";
+      did = _createDeviceId();
     }
+
+    await storage.saveDeviceId(did);
+    return did;
   }
 
   Future<void> _nextStep() async {
@@ -59,19 +81,15 @@ class _WelcomePageState extends State<WelcomePage> {
       setState(() => _isLoading = true);
 
       try {
+        final deviceId = await getDeviceId();
         final response = await http.post(
-          Uri.parse('http://192.168.0.106:8000/login'),
+          Uri.parse('http://192.168.0.100:8000/login'),
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'phone': _phoneNumber,
-            'deviceId': await getDeviceId(),
-          }),
+          body: jsonEncode({'phone': _phoneNumber, 'deviceId': deviceId}),
         );
 
         if (response.statusCode != 200) {
           setState(() => _isLoading = false);
-          print("res -------------> ");
-          print(response.body);
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -88,6 +106,64 @@ class _WelcomePageState extends State<WelcomePage> {
           _isLoading = false;
           _currentStep++;
         });
+      } catch (e) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Something went wrong: $e"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else if (_currentStep == 2) {
+      setState(() => _isLoading = true);
+
+      try {
+        final deviceId = await getDeviceId();
+        final response = await http.post(
+          Uri.parse('http://192.168.0.100:8000/verify-otp'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'phone': _phoneNumber,
+            'deviceId': deviceId,
+            'code': _code,
+          }),
+        );
+
+        if (response.statusCode != 200) {
+          setState(() => _isLoading = false);
+
+          final data = jsonDecode(response.body);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(data['detail']),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final data = jsonDecode(response.body);
+        print(data);
+        final session = data['session'];
+        final token = session['token'];
+        final storage = SecureStorageHelper();
+        await storage.saveAuthToken(token);
+
+        final db = DBHelper();
+        await db.addUserInfo(
+          data["user"]['firstName'] ?? "",
+          data["user"]['lastName'] ?? "",
+          data["user"]['phone'],
+          data["user"]['username'],
+          data["user"]['statusMessage'],
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const MyHomePage()),
+        );
       } catch (e) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -143,14 +219,17 @@ class _WelcomePageState extends State<WelcomePage> {
         centerContent = LoginSection(onPhoneNumberChanged: _setPhoneNumber);
         break;
       case 2:
-        centerContent = OTPSection(phoneNumber: _phoneNumber ?? "");
+        centerContent = OTPSection(
+          phoneNumber: _phoneNumber ?? "",
+          onCodeChanged: _setCode,
+        );
         break;
       default:
         centerContent = const SizedBox.shrink();
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,

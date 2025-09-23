@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "439383973298",
+    "project_id": "deencircle-5c06d",
+    "storage_bucket": "deencircle-5c06d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439383973298:android:1de0c16deca651d28558ab",
+        "android_client_info": {
+          "package_name": "com.example.qalb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSv8_LnhCzKyu60b77hjiYy5aUzxU9HK8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

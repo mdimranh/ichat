@@ -4,13 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:pinput/pinput.dart';
-import 'package:qalb/main.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 class OTPSection extends StatefulWidget {
   final String phoneNumber;
+  final Function(String) onCodeChanged;
 
-  const OTPSection({Key? key, required this.phoneNumber}) : super(key: key);
+  const OTPSection({
+    super.key,
+    required this.phoneNumber,
+    required this.onCodeChanged,
+  });
 
   @override
   State<OTPSection> createState() => _OTPSectionState();
@@ -90,13 +94,12 @@ class _OTPSectionState extends State<OTPSection> with CodeAutoFill {
   }
 
   void _onOTPCompleted(String otp) {
-    print('OTP entered: $otp');
-
-    // Navigate to Home Page
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const MyHomePage()),
-    );
+    widget.onCodeChanged(otp);
+    // // Navigate to Home Page
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (_) => const MyHomePage()),
+    // );
   }
 
   @override
@@ -218,10 +221,10 @@ class _OTPSectionState extends State<OTPSection> with CodeAutoFill {
           width: double.infinity,
           child: ElevatedButton(
             style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-              padding: MaterialStateProperty.all(
+              padding: WidgetStateProperty.all(
                 const EdgeInsets.symmetric(vertical: 15),
               ),
-              shape: MaterialStateProperty.all(
+              shape: WidgetStateProperty.all(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
             ),

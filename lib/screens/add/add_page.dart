@@ -52,7 +52,7 @@ class AddPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Add New", style: Theme.of(context).textTheme.titleLarge),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,

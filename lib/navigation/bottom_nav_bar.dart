@@ -7,10 +7,10 @@ class BottomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   const BottomNavBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   Widget _buildIcon(
     List<List<dynamic>> iconData,

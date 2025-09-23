@@ -44,9 +44,6 @@ final lightThemeData = ThemeData(
     onSecondary: Colors.white,
     tertiary: AppColors.darkCyanLight,
     onTertiary: Colors.white,
-
-    background: AppColors.lightBackground,
-    onBackground: AppColors.lightOnBackground,
     surface: AppColors.lightSurface,
     onSurface: AppColors.lightOnSurface,
 
@@ -56,7 +53,7 @@ final lightThemeData = ThemeData(
     outline: Colors.grey.shade300,
     outlineVariant: Colors.grey.shade200,
 
-    surfaceVariant: Colors.grey.shade50,
+    surfaceContainerHighest: Colors.grey.shade50,
     onSurfaceVariant: Colors.grey.shade700,
   ),
 
@@ -234,9 +231,6 @@ final darkThemeData = ThemeData(
     onSecondary: Colors.black,
     tertiary: AppColors.accentLight,
     onTertiary: Colors.black,
-
-    background: AppColors.darkBackground,
-    onBackground: AppColors.darkOnBackground,
     surface: AppColors.darkSurface,
     onSurface: AppColors.darkOnSurface,
 
@@ -246,7 +240,7 @@ final darkThemeData = ThemeData(
     outline: Colors.grey.shade600,
     outlineVariant: Colors.grey.shade700,
 
-    surfaceVariant: Colors.grey.shade800,
+    surfaceContainerHighest: Colors.grey.shade800,
     onSurfaceVariant: Colors.grey.shade300,
   ),
 

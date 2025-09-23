@@ -25,29 +25,81 @@ class DBHelper {
       version: 1,
       onCreate: (db, version) async {
         await db.execute('''
-          CREATE TABLE user(
+          CREATE TABLE me(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            phone TEXT
+            firstName TEXT,
+            lastName TEXT,
+            phone TEXT,
+            username TEXT,
+            statusMessage TEXT
           )
         ''');
       },
     );
   }
 
-  Future<bool> isLoggedIn() async {
+  Future<Map<String, dynamic>> getUserDetails() async {
     final db = await database;
-    final result = await db.query("user");
-    return result.isNotEmpty;
+    final result = await db.query("me");
+    final me = result.first;
+    return me;
   }
 
-  Future<void> loginUser(String name, String phone) async {
+  Future<void> addUserInfo(
+    String firstName,
+    String lastName,
+    String phone,
+    String username,
+    String statusMessage,
+  ) async {
     final db = await database;
-    await db.insert("user", {"name": name, "phone": phone});
+    final result = await db.query("me");
+    if (result.isEmpty) {
+      await db.insert("me", {
+        "firstName": firstName,
+        "lastName": lastName,
+        "phone": phone,
+        "username": username,
+        "statusMessage": statusMessage,
+      });
+    } else {
+      final me = result.first;
+      await db.update(
+        "me",
+        {
+          "firstName": firstName,
+          "lastName": lastName,
+          "phone": phone,
+          "username": username,
+          "statusMessage": statusMessage,
+        },
+        where: "id = ?",
+        whereArgs: [me["id"]],
+      );
+    }
   }
 
-  Future<void> logoutUser() async {
+  Future<void> updateUser(
+    String firstName,
+    String lastName,
+    String phone,
+    String username,
+    String statusMessage,
+  ) async {
     final db = await database;
-    await db.delete("user");
+    final users = await db.query("me");
+    final me = users.first;
+    await db.update(
+      "me",
+      {
+        "firstName": firstName,
+        "lastName": lastName,
+        "phone": phone,
+        "username": username,
+        "statusMessage": statusMessage,
+      },
+      where: "id = ?",
+      whereArgs: [me["id"]],
+    );
   }
 }
