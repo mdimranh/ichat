@@ -1,3 +1,5 @@
+//lib/main.dart
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -10,8 +12,8 @@ import 'package:qalb/screens/call_page.dart';
 import 'package:qalb/screens/channel_page.dart';
 import 'package:qalb/screens/group_page.dart';
 import 'package:qalb/screens/home/chat_page.dart';
+import 'package:qalb/screens/onboarding/welcome.dart';
 import 'package:qalb/screens/profile/profile.dart';
-import 'package:qalb/screens/welcome/welcome.dart';
 import 'package:qalb/services/firebase_messaging.dart';
 import 'package:qalb/services/notification.dart';
 import 'package:qalb/storage/secure_storage.dart';

@@ -62,7 +62,7 @@ class FirebaseMessagingService {
 
     if (deviceId == null) return;
     final response = await http.post(
-      Uri.parse('http://192.168.0.100:8000/device'),
+      Uri.parse('https://5j34gl7j-8000.inc1.devtunnels.ms/device'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': authToken ?? '',

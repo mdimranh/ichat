@@ -1,4 +1,4 @@
-// import 'dart:convert';
+//lib/screens/onboarding/welcome.dart
 
 import 'dart:convert';
 
@@ -9,8 +9,8 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:qalb/db/helper.dart';
 import 'package:qalb/main.dart';
-import 'package:qalb/screens/welcome/login.dart';
-import 'package:qalb/screens/welcome/otp_verify.dart';
+import 'package:qalb/screens/onboarding/login.dart';
+import 'package:qalb/screens/onboarding/otp_verify.dart';
 import 'package:qalb/storage/secure_storage.dart';
 import 'package:qalb/theme_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -83,7 +83,7 @@ class _WelcomePageState extends State<WelcomePage> {
       try {
         final deviceId = await getDeviceId();
         final response = await http.post(
-          Uri.parse('http://192.168.0.100:8000/login'),
+          Uri.parse('https://5j34gl7j-8000.inc1.devtunnels.ms/login'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'phone': _phoneNumber, 'deviceId': deviceId}),
         );
@@ -121,7 +121,7 @@ class _WelcomePageState extends State<WelcomePage> {
       try {
         final deviceId = await getDeviceId();
         final response = await http.post(
-          Uri.parse('http://192.168.0.100:8000/verify-otp'),
+          Uri.parse('https://5j34gl7j-8000.inc1.devtunnels.ms/verify-otp'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'phone': _phoneNumber,
